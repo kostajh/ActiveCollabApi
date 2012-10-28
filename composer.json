@@ -1,3 +1,6 @@
 {
     "name": "kostajh/activeCollabAPI"
+    "autoload": {
+        "psr-0": {"activeCollabAPI": "src/"}
+    },
 }
