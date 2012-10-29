@@ -1,23 +1,23 @@
 <?php
-  
+
   // Include activeCollab API wrapper
-  require_once dirname(__FILE__) . '/lib/include.php';
-  
+  require_once dirname(__FILE__) . '/src/activeCollabAPI.php';
+
   // Authenticate
-  ActiveCollab::setAPIUrl('http://localhost/corporate/public/api.php');
-  ActiveCollab::setKey('4-EUASVXm3VgJXhUfIsN1uGRASO1i0gIiLrIsbuF5e');
-  
+  ActiveCollab::setAPIUrl('');
+  ActiveCollab::setKey('');
+
   // List projects
   print '<pre>';
-  
+
   $projects = ActiveCollab::listProjects();
-  
+
   if($projects) {
     foreach($projects as $project) {
-      print 'Project #' . $project->getId() . ': ' . htmlspecialchars($project->getName()) . '<br />';
+      print 'Project #' . $project->id . ': ' . htmlspecialchars($project->name) . "\n";
     } // foreach
   } // if
-  
+
   print '</pre>';
 
 ?>

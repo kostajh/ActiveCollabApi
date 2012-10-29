@@ -1,41 +1,41 @@
 <?php
 /**
  * ActiveCollab class
- * 
+ *
  */
 class ActiveCollab {
-	
+
 	/**
 	 * Key for authorization
-	 * 
+	 *
 	 * @var string
 	 */
 	protected static $key = null;
-	
+
 	/**
 	 * API URL
-	 * 
+	 *
 	 * @var string
 	 */
 	protected static $api_url = null;
-	
+
 	/**
 	 * API url
-	 * 
+	 *
 	 * @var string
 	 */
 	protected static $api_string = null;
-	
+
 	/**
 	 * API response
-	 * 
+	 *
 	 * @var string
 	 */
 	protected static $API_response = null;
-	
+
 	/**
 	 * Mapped class name with first tag from response
-	 * 
+	 *
 	 * @var array
 	 */
 	private static $class_name = array(
@@ -63,10 +63,10 @@ class ActiveCollab {
 		'categories' => 'ActiveCollabCategory',
 		'page' => 'ActiveCollabPage'
 	);
-	
+
 	/**
 	 * Error codes from API
-	 * 
+	 *
 	 * @var array
 	 */
 	private static $API_error_codes = array(
@@ -108,12 +108,12 @@ class ActiveCollab {
     501 => "HTTP/1.1 501 Not Implemented",
     502 => "HTTP/1.1 502 Bad Gateway",
     503 => "HTTP/1.1 503 Service Unavailable",
-    504 => "HTTP/1.1 504 Gateway Time-out" 
+    504 => "HTTP/1.1 504 Gateway Time-out"
   );
-	  
+
 	/**
 	 * Format request string
-	 * 
+	 *
 	 * @param $path_info - requested path
 	 * @param $additional_params - additional params
 	 * @return string
@@ -128,12 +128,13 @@ class ActiveCollab {
 			} // foreach
 		} // if
 		self::$api_string .= "&token=" . self::$key;
+    self::$api_string .= "&format=json";
 		return self::$api_string;
 	} // setRequestString
-	
+
 	/**
 	 * Set key for authorisation
-	 * 
+	 *
 	 * @param integer $key
 	 * @return string
 	 */
@@ -141,69 +142,79 @@ class ActiveCollab {
 		if($key != null)
 			return self::$key = $key;
 	} // setKey
-	
+
 	/**
 	 * Set API url
-	 * 
+	 *
 	 * @param string $value
 	 * @return string
 	 */
 	public static function setAPIUrl($value) {
 		return self::$api_url = $value;
 	} // setAPIUrl
-	
+
 	/**
 	 * Make API call
-	 * 
+	 *
 	 * @param array $post_params
 	 * @param array $file_params
 	 * @return object
 	 */
 	public function callAPI($post_params = false, $file_params = false) {
-		$snoopy = new Snoopy();
-		if(!$post_params && !$file_params) {
-			$snoopy->fetch(self::$api_string);
-		} else {
-			if($file_params) {
-     			 $snoopy->_submit_type = 'multipart/form-data';
-     		} // if
-     		if(!$post_params)
-     			$post_params = array();
-     		if(!$file_params)
-     			$file_params = array();
-   			$snoopy->submit(self::$api_string, $post_params, $file_params);
-		} // if
-		if($snoopy->status != 200) {
-			self::$API_response = (string)self::$API_error_codes[$snoopy->status] . nl2br('<br/>');
-			if(is_array($snoopy->results)) {
-				$message = self::convertXMLToArray($snoopy->results);
-				$message_string = $message['message'] . nl2br('<br/>');
-				foreach ($message['field_errors'] as $key => $value) {
-					$message_string .= $value . nl2br('<br/>');
-				} // foreach
-				self::$API_response .= $message_string; 
-			} // if
-			throw new ActiveCollabCommonError(ERROR_API_RESPONSE . ' ' . self::$API_response);
-		} // if
-		return $snoopy->results;
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, self::$api_string);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    $message = curl_exec($ch);
+    $response = json_decode($message);
+    curl_close($ch);
+    if (!is_array($response)) {
+      // throw an error
+    } else {
+      return $response;
+    }
+		// if(!$post_params && !$file_params) {
+		// 	$snoopy->fetch(self::$api_string);
+		// } else {
+		// 	if($file_params) {
+  //    			 $snoopy->_submit_type = 'multipart/form-data';
+  //    		} // if
+  //    		if(!$post_params)
+  //    			$post_params = array();
+  //    		if(!$file_params)
+  //    			$file_params = array();
+  //  			$snoopy->submit(self::$api_string, $post_params, $file_params);
+		// } // if
+		// if($response->status != 200) {
+		// 	self::$API_response = (string)self::$API_error_codes[$snoopy->status] . nl2br('<br/>');
+		// 	if(is_array($snoopy->results)) {
+		// 		$message = self::convertXMLToArray($snoopy->results);
+		// 		$message_string = $message['message'] . nl2br('<br/>');
+		// 		foreach ($message['field_errors'] as $key => $value) {
+		// 			$message_string .= $value . nl2br('<br/>');
+		// 		} // foreach
+		// 		self::$API_response .= $message_string;
+		// 	} // if
+		// 	throw new ActiveCollabCommonError(ERROR_API_RESPONSE . ' ' . self::$API_response);
+		// } // if
+		// return $snoopy->results;
 	} // callAPI
-	
+
 	/**
 	 * Check if array is multidimensional
-	 * 
+	 *
 	 * @param $array - array to check
 	 * @return boolean - true if array is multidimensional, false if not
 	 */
 	public function isMultidimensionalArray($array) {
-	   if (is_array(@reset($array))) 
+	   if (is_array(@reset($array)))
 	    return true;
 	   else
 	     return false;
 	} //isMultidimensionalArray
-	
+
 	/**
 	 * Convert response from API to array or object
-	 * 
+	 *
 	 * @param $xml - XML response from API
 	 * @param $object - object name
 	 * @return mixed
@@ -218,13 +229,13 @@ class ActiveCollab {
   			if(!empty($response)){
   				$tmp = self::makeArrayOfObject($response,$object,$class_name);
   				return $tmp;
-  			} // if  			
+  			} // if
   		} // if
   	} // convertXMLToArray
-  	
+
   	/**
   	 * Create array of object
-  	 * 
+  	 *
   	 * @param $response - array
   	 * @param $object_name - first key of array
   	 * @param $make_base_class - name of class
@@ -254,7 +265,7 @@ class ActiveCollab {
   		}
   		return $tmp;
   	}
-  	
+
 	/**
      * Parse a SimpleXMLElement object recursively into an Array.
      *
@@ -280,7 +291,7 @@ class ActiveCollab {
             	 } // if
             } else {
                 $arr[$elementName] = array();
-                self::convertXmlObjToArr($node, $arr[$elementName]);   
+                self::convertXmlObjToArr($node, $arr[$elementName]);
             } // if
             $executed = true;
         } // foreach
@@ -289,10 +300,10 @@ class ActiveCollab {
         } // if
        return ;
     } // convertXmlObjToArr
-  
+
 	/**
-	 * Return API version 
-	 * 
+	 * Return API version
+	 *
 	 * @param void
 	 * @return array
 	 */
@@ -303,10 +314,10 @@ class ActiveCollab {
 			return self::convertXMLToArray($response);
 		} // if
 	} // getVersion
-	
+
 	/**
 	 * List all project
-	 * 
+	 *
 	 * @param void
 	 * @return array - array of ActiveCollabProject objects
 	 */
@@ -315,13 +326,14 @@ class ActiveCollab {
 		self::setRequestString($path_info);
 		$response = self::callAPI();
 		if($response) {
+      return $response;
 			return self::convertXMLToArray($response,'project');
 		} // if
 	} // listProjects
-	
+
 	/**
 	 * List all people involved with a project and their permissions.
-	 * 
+	 *
 	 * @param $project_id - project Id
 	 * @return array - array of ActiveCollabUser objects
 	 */
@@ -333,20 +345,20 @@ class ActiveCollab {
 			return self::convertXMLToArray($response,'project_user');
 		} // if
 	} // listPeopleOnProject
-	
+
 	/**
 	 * Get API version
-	 * 
+	 *
 	 * @return float
 	 */
 	protected function getAPIVersion() {
 		$api_version = self::getVersion();
 		return $api_version['api_version'];
 	} // getAPIVersion
-	
+
 	/**
 	 * List all categories
-	 * 
+	 *
 	 * @param $project_id - Project id
 	 * @param $object - Object name
 	 * @return array of ActiveCollabCategory object`s
@@ -363,47 +375,47 @@ class ActiveCollab {
 			throw new ActiveCollabCommandNotRecognized(COMMAND_NOT_RECOGNIZED . 'Your API version is ' . self::getAPIVersion());
 		} // if
 	} // listCategories
-	
+
 	/**
 	 * List ticket categories
-	 * 
+	 *
 	 * @param $project_id
 	 * @return array
 	 */
 	public function listTicketCategoriesByProjectId($project_id) {
 		return self::listCategories($project_id,'tickets');
 	} // listTicketCategoriesByProjectId
-	
+
 	/**
 	 * List discussion categories
-	 * 
+	 *
 	 * @param $project_id
 	 * @return array
 	 */
 	public function listDiscussionCategoriesByProjectId($project_id) {
 		return self::listCategories($project_id,'discussions');
 	} // listDiscussionCategoriesByProjectId
-	
+
 	/**
 	 * List file categories
-	 * 
+	 *
 	 * @param $project_id
 	 * @return array
 	 */
 	public function listFileCategoriesByProjectId($project_id) {
 		return self::listCategories($project_id,'files');
 	} // listFileCategoriesByProjectId
-	
+
 	/**
 	 * List page categories
-	 * 
+	 *
 	 * @param $project_id
 	 * @return array
 	 */
 	public function listPageCategoriesByProjectId($project_id) {
 		return self::listCategories($project_id,'pages');
 	} // listPageCategoriesByProjectId
-	
+
 	/**
 	 * List all available project groups.
 	 *
@@ -418,10 +430,10 @@ class ActiveCollab {
 			return self::convertXMLToArray($response,'project_group');
 		} // if
 	} // listProjectGroups
-	
+
 	/**
 	 * List all ticket for specific project
-	 * 
+	 *
 	 * @param $project_id - project Id
 	 * @return array - array of ActiveCollabTicket objects
 	 */
@@ -433,10 +445,10 @@ class ActiveCollab {
 			return self::convertXMLToArray($response,'ticket');
 		} // if
 	} // listTicketsByProjectId
-	
+
 	/**
 	 * List all ticket for specific project and category
-	 * 
+	 *
 	 * @param $project_id - Project id
 	 * @param $category_id - Category id
 	 * @return array - array of ActiveCollabTicket objects
@@ -454,10 +466,10 @@ class ActiveCollab {
 			throw new ActiveCollabCommandNotRecognized(COMMAND_NOT_RECOGNIZED . 'Your API version is ' . self::getAPIVersion());
 		} // if
 	} // listTicketsByCategoryId
-	
+
 	/**
 	 * List all archived ticket for specific project
-	 * 
+	 *
 	 * @param $project_id - project Id
 	 * @return array - array of ActiveCollabTicket objects
 	 */
@@ -469,10 +481,10 @@ class ActiveCollab {
 			return self::convertXMLToArray($response,'ticket');
 		} // if
 	} // listArchivedTicketsByProjectId
-	
+
 	/**
 	 * List all files for specific project
-	 * 
+	 *
 	 * @param $project_id - project Id
 	 * @return array - array of ActiveCollabFile objects
 	 */
@@ -487,7 +499,7 @@ class ActiveCollab {
 
 	/**
 	 * List all files for specific project and category
-	 * 
+	 *
 	 * @param $project_id - Project id
 	 * @param $category_id - Category id
 	 * @return array - array of ActiveCollabFile objects
@@ -505,10 +517,10 @@ class ActiveCollab {
 			throw new ActiveCollabCommandNotRecognized(COMMAND_NOT_RECOGNIZED . 'Your API version is ' . self::getAPIVersion());
 		} // if
 	} // listFilesByCategoryId
-		
+
 	/**
 	 * List all discussions for specific project
-	 * 
+	 *
 	 * @param $project_id - project Id
 	 * @return array - array of ActiveCollabDiscussion objects
 	 */
@@ -520,10 +532,10 @@ class ActiveCollab {
 			return self::convertXMLToArray($response,'discussion');
 		} // if
 	} // listDiscussionsByProjectId
-	
+
 	/**
 	 * List all discussion for specific project and category
-	 * 
+	 *
 	 * @param $project_id - Project id
 	 * @param $category_id - Category id
 	 * @return array - array of ActiveCollabDiscussion objects
@@ -541,10 +553,10 @@ class ActiveCollab {
 			throw new ActiveCollabCommandNotRecognized(COMMAND_NOT_RECOGNIZED . 'Your API version is ' . self::getAPIVersion());
 		} // if
 	} // listDiscussionsByCategoryId
-	
+
 	/**
 	 * List all milestones for specific project
-	 * 
+	 *
 	 * @param $project_id - project Id
 	 * @return array - array of ActiveCollabMilestone objects
 	 */
@@ -556,10 +568,10 @@ class ActiveCollab {
 			return self::convertXMLToArray($response,'milestone');
 		} // if
 	} // listMilestonesByProjectId
-	
+
 	/**
 	 * List all checklists for specific project
-	 * 
+	 *
 	 * @param $project_id - project Id
 	 * @return array - array of ActiveCollabChecklist objects
 	 */
@@ -571,10 +583,10 @@ class ActiveCollab {
 			return self::convertXMLToArray($response,'checklist');
 		} // if
 	} // listChecklistsByProjectId
-	
+
 	/**
 	 * List all arhived checklist for specific project
-	 * 
+	 *
 	 * @param $project_id - project Id
 	 * @return array - array of ActiveCollabChecklist object
 	 */
@@ -586,10 +598,10 @@ class ActiveCollab {
 			return self::convertXMLToArray($response,'checklist');
 		} // if
 	} // listArchivedChecklistsByProjectId
-	
+
 	/**
 	 * List all page for specific project and category
-	 * 
+	 *
 	 * @param $project_id - Project id
 	 * @param $category_id - Category id
 	 * @return array - array of ActiveCollabPage objects
@@ -607,10 +619,10 @@ class ActiveCollab {
 			throw new ActiveCollabCommandNotRecognized(COMMAND_NOT_RECOGNIZED . 'Your API version is ' . self::getAPIVersion());
 		} // if
 	} // listPageByCategoryId
-	
+
 	/**
 	 * List all time records for specific project
-	 * 
+	 *
 	 * @param $project_id - project Id
 	 * @return array - array of ActiveCollabTime objects
 	 */
@@ -622,10 +634,10 @@ class ActiveCollab {
 			return self::convertXMLToArray($response,'time_record');
 		} // if
 	} // listTimeRecordsByProjectId
-	
+
 	/**
 	 * List all system roles
-	 * 
+	 *
 	 * @param void
 	 * @return array - array of ActiveCollabRole objects
 	 */
@@ -640,7 +652,7 @@ class ActiveCollab {
 
 	/**
 	 * List all project roles
-	 * 
+	 *
 	 * @param void
 	 * @return array - array of ActiveCollabRole objects
 	 */
@@ -652,10 +664,10 @@ class ActiveCollab {
 			return self::convertXMLToArray($response,'project_role');
 		} // if
 	} // listProjectRoles
-	
+
 	/**
 	 * List role details
-	 * 
+	 *
 	 * @param $role_id - role id
 	 * @return object - ActiveCollabRole object
 	 */
@@ -667,10 +679,10 @@ class ActiveCollab {
 			return self::convertXMLToArray($response,'system_role');
 		} // if
 	} // findRoleDetailsById
-	
+
 	/**
 	 * List all companies
-	 * 
+	 *
 	 * @param $void
 	 * @return array - array of ActiveCollabCompany objects
 	 */
@@ -682,10 +694,10 @@ class ActiveCollab {
 			return self::convertXMLToArray($response,'company');
 		} // if
 	} // listCompanies
-	
+
 	/**
 	 * List all status message
-	 * 
+	 *
 	 * @param $void
 	 * @return array - array of ActiveCollabStatusMessage objects
 	 */
@@ -697,10 +709,10 @@ class ActiveCollab {
 			return self::convertXMLToArray($response,'message');
 		} // if
 	} // listStatusMessages
-	
+
 	/**
-	 * List all status message created by user 
-	 * 
+	 * List all status message created by user
+	 *
 	 * @param $user_id - user id
 	 * @return array - array of ActiveCollabStatusMessage objects
 	 */
@@ -713,10 +725,10 @@ class ActiveCollab {
 			return self::convertXMLToArray($response,'message');
 		} // if
 	} // listStatusMessagesByUserId
-	
+
 	/**
 	 * Create ActiveCollabTicket object
-	 * 
+	 *
 	 * @param $project_id - project id
 	 * @param $id - ticket id
 	 * @return object
@@ -724,10 +736,10 @@ class ActiveCollab {
 	public function findTicketById($project_id,$id) {
 		return new ActiveCollabTicket($project_id, $id);
 	} // findTicketById
-	
+
 	/**
 	 * Create ActiveCollabSubTask object
-	 * 
+	 *
 	 * @param $project_id - project id
 	 * @param $id - subtask id
 	 * @return object
@@ -735,10 +747,10 @@ class ActiveCollab {
 	public function findSubTaskById($project_id,$id) {
 		return new ActiveCollabSubTask($project_id, $id);
 	} // findSubTaskById
-		
+
 	/**
 	 * Create ActiveCollabComment object
-	 * 
+	 *
 	 * @param $project_id - project id
 	 * @param $id - comment id
 	 * @return object
@@ -746,10 +758,10 @@ class ActiveCollab {
 	public function findCommentById($project_id,$id) {
 		return new ActiveCollabComment($project_id, $id);
 	} // findCommentById
-	
+
 	/**
 	 * Create ActiveCollabFile object
-	 * 
+	 *
 	 * @param $project_id - project id
 	 * @param $id - file id
 	 * @return object
@@ -757,10 +769,10 @@ class ActiveCollab {
 	public function findFileById($project_id,$id) {
 		return new ActiveCollabFile($project_id, $id);
 	} // findFileById
-	
+
 	/**
 	 * Create ActiveCollabDiscussion object
-	 * 
+	 *
 	 * @param $project_id - project id
 	 * @param $id - discussion id
 	 * @return object
@@ -768,10 +780,10 @@ class ActiveCollab {
 	public function findDiscussionById($project_id,$id) {
 		return new ActiveCollabDiscussion($project_id, $id);
 	} // findDiscussionById
-	
+
 	/**
 	 * Create ActiveCollabMilestone object
-	 * 
+	 *
 	 * @param $project_id - project id
 	 * @param $id - milestone id
 	 * @return object
@@ -779,20 +791,20 @@ class ActiveCollab {
 	public function findMilestoneById($project_id,$id) {
 		return new ActiveCollabMilestone($project_id, $id);
 	} // findMilestoneById
-	
+
 	/**
 	 * Create ActiveCollabProjectGroup object
-	 * 
+	 *
 	 * @param $id - project group id
 	 * @return object
 	 */
 	public function findProjectGroupById($id) {
 		return new ActiveCollabProjectGroup($id);
 	} // findGroupById
-	
+
 	/**
 	 * Create ActiveCollabChecklist object
-	 * 
+	 *
 	 * @param $project_id - project id
 	 * @param $id - checklist id
 	 * @return object
@@ -800,10 +812,10 @@ class ActiveCollab {
 	public function findChecklistById($project_id,$id) {
 		return new ActiveCollabChecklist($project_id, $id);
 	} // findChecklistById
-	
+
 	/**
 	 * Create ActiveCollabPage object
-	 * 
+	 *
 	 * @param $project_id - project id
 	 * @param $id - page id
 	 * @return object
@@ -811,10 +823,10 @@ class ActiveCollab {
 	public function findPageById($project_id,$id) {
 		return new ActiveCollabPage($project_id, $id);
 	} // findPageById
-	
+
 	/**
 	 * Create ActiveCollabTime object
-	 * 
+	 *
 	 * @param $project_id - project id
 	 * @param $id - time record id
 	 * @return object
@@ -822,20 +834,20 @@ class ActiveCollab {
 	public function findTimeById($project_id,$id) {
 		return new ActiveCollabTime($project_id, $id);
 	} // findTimeById
-	
+
 	/**
 	 * Create ActiveCollabCompany object
-	 * 
+	 *
 	 * @param $id - company id
 	 * @return object
 	 */
 	public function findCompanyById($id) {
 		return new ActiveCollabCompany($id);
 	} // findCompanyById
-	
+
 	/**
 	 * Create ActiveCollabUser object
-	 * 
+	 *
 	 * @param $company_id - company id
 	 * @param $id - user id
 	 * @return object
@@ -843,17 +855,17 @@ class ActiveCollab {
 	public function findUserById($company_id,$id) {
 		return new ActiveCollabUser($company_id, $id);
 	} // findUserById
-	
+
 	/**
 	 * Create ActiveCollabProject object
-	 * 
+	 *
 	 * @param $id - project id
 	 * @return object
 	 */
 	public function findProjectById($id) {
 		return new ActiveCollabProject($id);
 	} // findProjectById
-	
-			
+
+
 }
 ?>
