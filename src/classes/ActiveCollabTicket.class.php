@@ -7,29 +7,29 @@ include_once('ActiveCollabBaseObject.class.php');
 class ActiveCollabTicket extends ActiveCollabBaseObject {
 	/**
 	 * ticketID
-	 * 
+	 *
 	 * @var integer
 	 */
 	protected $ticket_id = null;
-	
+
 	/**
 	 * Fields to be changed in original geter fields
 	 * If field doesnt exist use name of get function as value ie. integer_field_3 => 'getTicketID'
-	 * 
+	 *
 	 * @var array
 	 */
 	protected $maped_fields = array('integer_field_1' => 'ticket_id');
-	
+
 	/**
 	 * Fields mandatory for save action
-	 * 
+	 *
 	 * @var array
 	 */
 	protected $mandatory_fields = array('name');
 
 	/**
 	 * Construct the object
-	 * 
+	 *
 	 * @param $project_id - project id
 	 * @param $ticket_id - ticket id
 	 * @return object
@@ -46,17 +46,17 @@ class ActiveCollabTicket extends ActiveCollabBaseObject {
 				$ticket = $this->getTicket();
 				if($ticket) {
 					$this->object_details = $ticket; //object_details is array
-					$this->createObject();  //fill this object with values from returned array	 
+					$this->createObject();  //fill this object with values from returned array
 				} // if
 			} // if
 		} // if
 		return $this;
 	} // construct
-	
-	
+
+
 	/**
 	 * Set flags - set object action permissions
-	 * 
+	 *
 	 * @param void
 	 * @return false
 	 */
@@ -70,25 +70,25 @@ class ActiveCollabTicket extends ActiveCollabBaseObject {
 		$this->can_have_comments = true;
 		$this->can_have_attachments = true;
 	} // setFlags
-	
+
 	/**
-	 * Return ticket 
-	 * 
+	 * Return ticket
+	 *
 	 * @param void
 	 * @return array
 	 */
 	private function getTicket() {
 		$path_info = '/projects/' . $this->project_id . '/tickets/'. $this->ticket_id;
 		ActiveCollab::setRequestString($path_info);
-		$response = ActiveCollab::callAPI(); 
-		if($response) {
-			return ActiveCollab::convertXMLToArray($response);
+		$response = ActiveCollab::callAPI();
+		if (is_array($response)) {
+			return $response;
 		} // if
 	} // getTicket
-	
+
 	/**
 	 * Save ticket
-	 * 
+	 *
 	 * @param void
 	 * @return mixed - ticket object on success, and false on fail.
 	 */
@@ -109,6 +109,6 @@ class ActiveCollabTicket extends ActiveCollabBaseObject {
 			throw new ActiveCollabInvalidParamError($this->validateSave());
 		} // if
 	} // save
-	
+
 }
 ?>

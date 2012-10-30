@@ -2,38 +2,38 @@
 
   /**
    * Single date time value
-   * 
+   *
    * This class provides some handy methods for working with timestamps and extracting data from them
    *
    * @package angie.library.datetime
    */
   class DateTimeValue extends DateValue {
-    
+
     /**
      * Cached hour value
      *
      * @var integer
      */
     var $hour;
-    
+
     /**
      * Cached minutes value
      *
      * @var integer
      */
     var $minute;
-    
+
     /**
      * Cached seconds value
      *
      * @var integer
      */
     var $second;
-    
+
     // ---------------------------------------------------
     //  Static methods
     // ---------------------------------------------------
-    
+
     /**
      * Returns current time object
      *
@@ -43,7 +43,7 @@
     function now() {
       return new DateTimeValue(time());
     } // now
-    
+
     /**
      * This function works like mktime, just it always returns GMT
      *
@@ -58,7 +58,7 @@
     function make($hour, $minute, $second, $month, $day, $year) {
       return new DateTimeValue(mktime($hour, $minute, $second, $month, $day, $year));
     } // make
-    
+
     /**
      * Make time from string using strtotime() function. This function will return null
      * if it fails to convert string to the time
@@ -70,7 +70,7 @@
       $timestamp = strtotime($str);
       return ($timestamp === false) || ($timestamp === -1) ? null : new DateTimeValue($timestamp);
     } // makeFromString
-    
+
     /**
      * Return beginning of the month DateTimeValue
      *
@@ -81,7 +81,7 @@
     function beginningOfMonth($month, $year) {
       return new DateTimeValue("$year-$month-1 00:00:00");
     } // beginningOfMonth
-    
+
     /**
      * Return end of the month
      *
@@ -92,14 +92,14 @@
     function endOfMonth($month, $year) {
       $reference = mktime(0, 0, 0, $month, 15, $year);
       $last_day = date('t', $reference);
-      
+
       return new DateTimeValue("$year-$month-$last_day 23:59:59");
     } // endOfMonth
-    
+
     // ---------------------------------------------------
     //  Formating
     // ---------------------------------------------------
-    
+
     /**
      * Return datetime formated in MySQL datetime format
      *
@@ -109,11 +109,11 @@
     function toMySQL() {
       return $this->format(DATETIME_MYSQL);
     } // toMySQL
-    
+
     // ---------------------------------------------------
     //  Utils
     // ---------------------------------------------------
-    
+
     /**
      * Break timestamp into its parts and set internal variables
      *
@@ -122,7 +122,7 @@
      */
     function parse() {
       $this->date_data = getdate($this->timestamp);
-      
+
       if($this->date_data) {
         $this->year   = (integer) $this->date_data['year'];
         $this->month  = (integer) $this->date_data['mon'];
@@ -132,7 +132,7 @@
         $this->second = (integer) $this->date_data['seconds'];
       } // if
     } // parse
-    
+
     /**
      * Update internal timestamp based on internal param values
      *
@@ -141,19 +141,19 @@
      */
     function setTimestampFromAttributes() {
       $this->setTimestamp(mktime(
-        $this->hour, 
-        $this->minute, 
-        $this->second, 
-        $this->month, 
-        $this->day, 
+        $this->hour,
+        $this->minute,
+        $this->second,
+        $this->month,
+        $this->day,
         $this->year
       )); // setTimestamp
     } // setTimestampFromAttributes
-    
+
     // ---------------------------------------------------
     //  Getters and setters
     // ---------------------------------------------------
-    
+
     /**
      * Return hour
      *
@@ -163,7 +163,7 @@
     function getHour() {
       return $this->hour;
     } // getHour
-    
+
     /**
      * Set hour value
      *
@@ -174,7 +174,7 @@
       $this->hour = (integer) $value;
       $this->setTimestampFromAttributes();
     } // setHour
-    
+
     /**
      * Return minute
      *
@@ -184,7 +184,7 @@
     function getMinute() {
       return $this->minute;
     } // getMinute
-    
+
     /**
      * Set minutes value
      *
@@ -195,7 +195,7 @@
       $this->minute = (integer) $value;
       $this->setTimestampFromAttributes();
     } // setMinute
-    
+
     /**
      * Return seconds
      *
@@ -205,7 +205,7 @@
     function getSecond() {
       return $this->second;
     } // getSecond
-    
+
     /**
      * Set seconds
      *
@@ -216,7 +216,7 @@
       $this->second = (integer) $value;
       $this->setTimestampFromAttributes();
     } // setSecond
-  
+
   } // DateTimeValue
 
 ?>
