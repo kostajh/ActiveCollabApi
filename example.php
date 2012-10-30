@@ -9,10 +9,10 @@ $ac->setAPIUrl('');
 $ac->setKey('');
 
 // List projects
-$projects = ActiveCollab::listProjects();
+$projects = $ac->listProjects();
 
-if($projects) {
-  foreach($projects as $project) {
+if ($projects) {
+  foreach ($projects as $project) {
     print 'Project #' . $project->id . ': ' . htmlspecialchars($project->name) . "\n";
   }
 }
