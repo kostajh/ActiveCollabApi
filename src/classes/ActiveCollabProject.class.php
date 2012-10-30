@@ -7,46 +7,46 @@ include_once('ActiveCollabBaseObject.class.php');
 class ActiveCollabProject extends ActiveCollabBaseObject {
 	/**
 	 * Fields mandatory for save action
-	 * 
+	 *
 	 * @var array
 	 */
 	protected $mandatory_fields = array('name');
-	
+
 	/**
 	 * List of possible status
-	 * 
+	 *
 	 * @var array
 	 */
 	protected $avaible_status = array(
 	ACTIVECOLLAB_PROJECT_STATUS_ACTIVE,
-	ACTIVECOLLAB_PROJECT_STATUS_PAUSED, 
-	ACTIVECOLLAB_PROJECT_STATUS_COMPLETED, 
+	ACTIVECOLLAB_PROJECT_STATUS_PAUSED,
+	ACTIVECOLLAB_PROJECT_STATUS_COMPLETED,
 	ACTIVECOLLAB_PROJECT_STATUS_CANCELED
 	);
-	
+
 	/**
 	 * List of users ID to been add to project
-	 * 
+	 *
 	 * @var array
 	 */
 	protected $users = false;
 	/**
 	 * Role id
-	 * 
+	 *
 	 * @var integer
 	 */
 	protected $role_id;
-	
+
 	/**
 	 * Permissions for user
-	 * 
+	 *
 	 * @var array
 	 */
 	protected $permissions;
-	
+
 	/**
 	 * Construct the object
-	 * 
+	 *
 	 * @param $project_id - project id
 	 * @return object
 	 */
@@ -57,46 +57,46 @@ class ActiveCollabProject extends ActiveCollabBaseObject {
 		if($project_id) {
 			$project = $this->getProject();
 			if($project) {
-				$this->object_details = $project; //object_details is array 
+				$this->object_details = $project; //object_details is array
 				if($project['leader']['id']) {
 					$this->setLeaderID($project['leader']['id']);
 				} // if
-				$this->createObject();  //fill this object with values from returned array	
+				$this->createObject();  //fill this object with values from returned array
 			} // if
 		} else {
 			$this->mandatory_fields[] = 'leader_id';
 		} // if
 		return $this;
 	} // construct
-	
+
 	/**
 	 * Set flags - set object action permissions
-	 * 
+	 *
 	 * @param void
 	 * @return false
 	 */
 	private function setFlags() {
-		
+
 	} // setFlags
-	
+
 	/**
-	 * Return project 
-	 * 
+	 * Return project
+	 *
 	 * @param void
 	 * @return Array
 	 */
 	private function getProject() {
 		$path_info = '/projects/' . $this->project_id;
 		ActiveCollab::setRequestString($path_info);
-		$response = ActiveCollab::callAPI(); 
-		if($response) {
-			return ActiveCollab::convertXMLToArray($response);
-		} // if
-	} // getProject
-	
+		$response = ActiveCollab::callAPI();
+		if (is_array($response)) {
+			return $response;
+		}
+	}
+
 	/**
 	 * Save project
-	 * 
+	 *
 	 * @param void
 	 * @return mixed - project object on success, and false on fail.
 	 */
@@ -116,10 +116,10 @@ class ActiveCollabProject extends ActiveCollabBaseObject {
 			throw new ActiveCollabInvalidParamError($this->validateSave());
 		} // if
 	} // save
-	
+
 	/**
 	 * Delete project
-	 * 
+	 *
 	 * @param void
 	 * @return boolean - false on failure, true on success
 	 */
@@ -133,10 +133,10 @@ class ActiveCollabProject extends ActiveCollabBaseObject {
 		}
 		return $response;
 	} // delete
-	
+
 	/**
 	 * Set project status
-	 * 
+	 *
 	 * @param $status - status string
 	 * @return boolean - true on success false on failure
 	 */
@@ -160,25 +160,25 @@ class ActiveCollabProject extends ActiveCollabBaseObject {
 	   		throw new ActiveCollabCommonError(ERROR_CHANGE_STATUS_FUNCTION_CALL);
 	   } // if
 	} // changeStatus
-	
+
 	/**
 	 * Returns all tasks that are assigned to the logged in user in a particular project.
-	 * 
+	 *
 	 * @param void
 	 * @return object - ActiveCollabTicket object
 	 */
 	public function getUserTasks() {
 		$path_info = '/projects/' . $this->project_id . '/user-tasks';
 		ActiveCollab::setRequestString($path_info);
-		$response = ActiveCollab::callAPI(); 
-		if($response) {
-			return ActiveCollab::convertXMLToArray($response,'assignment');
+		$response = ActiveCollab::callAPI();
+		if (is_array($response)) {
+			return $response;
 		} // if
 	} // getUserTasks
-	
+
 	/**
 	 * Add one or more users to the project and set their permissions
-	 * 
+	 *
 	 * @param void
 	 * @return array
 	 */
@@ -197,10 +197,10 @@ class ActiveCollabProject extends ActiveCollabBaseObject {
 			throw new ActiveCollabCommonError(ERROR_PROJECT_ISNT_SELECTED);
 		} // if
 	} // saveUsers
-	
+
 	/**
 	 * Change permissions of selected user in a given project.
-	 * 
+	 *
 	 * @param $user_id - user id
 	 * @param $role - id of the project role or array of permission
 	 * @return mixed - true if success,error if fail
@@ -215,16 +215,16 @@ class ActiveCollabProject extends ActiveCollabBaseObject {
 			$path_info = '/projects/' . $this->project_id . '/people/' . $user_id . '/change-permissions';
 			ActiveCollab::setRequestString($path_info); //format API url with given path info
 			$params = $this->createUserParams();
-			$response = ActiveCollab::callAPI($params); 
+			$response = ActiveCollab::callAPI($params);
 			return true;
 		} else {
 			throw new ActiveCollabCommonError(ERROR_USER_ID_EMPTY);
 		} // if
 	} // changeUserPermission
-	
+
 	/**
-	 * Removes specific user from the project. 
-	 * 
+	 * Removes specific user from the project.
+	 *
 	 * @param $user_id - user id
 	 * @return mixed - true on success, error message on fail
 	 */
@@ -239,10 +239,10 @@ class ActiveCollabProject extends ActiveCollabBaseObject {
 			throw new ActiveCollabCommonError(ERROR_USER_ID_EMPTY);
 		} // if
 	} // removeUserFromProject
-	
+
 	/**
 	 * Add users to project
-	 * 
+	 *
 	 * @param void
 	 * @return mixed - true on success, error message on fail
 	 */
@@ -250,13 +250,13 @@ class ActiveCollabProject extends ActiveCollabBaseObject {
 		$pathInfo = '/projects/' . $this->project_id . '/people/add';
 		ActiveCollab::setRequestString($pathInfo); //format API url with given path info
 		$params = $this->createUserParams();
-		$response = ActiveCollab::callAPI($params); 
+		$response = ActiveCollab::callAPI($params);
 		return true;
 	} // saveUsersToProject
-	
+
 	/**
 	 * Create user params
-	 * 
+	 *
 	 * @param void
 	 * @return array
 	 */
@@ -265,8 +265,8 @@ class ActiveCollabProject extends ActiveCollabBaseObject {
 		if(!empty($this->users)){
 			foreach($this->users as $key) {
 				$params['users'][] = $key;
-			} // foreach	
-		} // if		
+			} // foreach
+		} // if
 		if(isset($this->role_id)) {
 			$params['project_permissions']['role_id'] = $this->role_id;
 		} else {
@@ -279,10 +279,10 @@ class ActiveCollabProject extends ActiveCollabBaseObject {
 		$params['submitted'] = 'submitted';
 		return $params;
 	} // createUserParams
-	
+
 	/**
 	 * Add users to project
-	 * 
+	 *
 	 * @param $value - array of user id
 	 * @param $role - id of the project role or array of permission
 	 * @return array
