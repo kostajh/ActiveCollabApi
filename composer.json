@@ -1,8 +1,21 @@
 {
     "name": "kostajh/activeCollabAPI",
+    "type": "library",
+    "description": "PHP wrappers for interacting with activeCollab API.",
+    "keywords": ["activeCollab"],
+    "homepage": "http://github.com/kostajh/activeCollabAPI",
+    "license": "GPL",
+    "authors": [
+        {
+            "name": "Kosta Harlan",
+            "email": "kostajh@gmail.com",
+            "homepage": "http://kostaharlan.net",
+            "role": "Developer"
+        }
+    ],
     "autoload": {
         "psr-0": {
-            "activeCollabAPI": "src/"
+            "activeCollabAPI": "src"
         }
     }
 }
