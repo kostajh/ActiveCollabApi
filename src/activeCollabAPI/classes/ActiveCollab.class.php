@@ -1,4 +1,7 @@
 <?php
+
+namespace activeCollabAPI;
+
 /**
  * ActiveCollab class
  *
