@@ -128,8 +128,11 @@ class activeCollabAPI {
 
   /**
    * Helper function to check if the response is an object or array.
+   *
+   * @param $response
+   *        String, object, or array returned from activeCollab.
    */
-  private function checkResponse($response) {
+  public static function checkResponse($response) {
     return (is_array($response) || is_object($response)) ? $response : FALSE;
   }
 
