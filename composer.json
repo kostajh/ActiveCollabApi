@@ -1,5 +1,5 @@
 {
-    "name": "kostajh/activeCollabAPI",
+    "name": "kostajh/ActiveCollabApi",
     "type": "library",
     "description": "PHP wrappers for interacting with activeCollab API.",
     "keywords": ["activeCollab"],
@@ -15,7 +15,7 @@
     ],
     "autoload": {
         "psr-0": {
-            "activeCollabAPI": "src"
+            "ActiveCollabApi": "src"
         }
     }
 }
