@@ -90,11 +90,11 @@ class activeCollabAPI {
     curl_setopt($ch, CURLOPT_URL, self::$api_string);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     $message = curl_exec($ch);
+    curl_close($ch);
     if ($message == 'HTTP/1.1 404 Not Found' || $message == '<h1>HTTP/1.1 403 Forbidden</h1>') {
       throw new ActiveCollabCommonError(ERROR_API_RESPONSE . ' ' . $message);
     }
     $response = json_decode($message);
-    curl_close($ch);
     if (!self::checkResponse($response)) {
       // Throw an error.
       throw new ActiveCollabCommonError(ERROR_API_RESPONSE . ' ' . self::$API_response);
