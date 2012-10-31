@@ -1,10 +1,14 @@
 <?php
 
 /**
+ * @file Methods for interacting with the activeCollab API.
+ */
+
+/**
  * activeCollabAPI class.
  *
  */
-class activeCollabAPI {
+class ActiveCollabApi {
 
   /**
    * Key for authorization
@@ -674,4 +678,5 @@ class activeCollabAPI {
 
 }
 
-?>
+class ActiveCollabApiException extends Exception {}
+
