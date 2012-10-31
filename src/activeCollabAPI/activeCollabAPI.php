@@ -1,4 +1,7 @@
 <?php
+
+namespace activeCollabApi;
+
 /**
  * @file
  *   Methods for interacting with the activeCollab API.
