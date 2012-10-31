@@ -3,7 +3,7 @@
     "type": "library",
     "description": "PHP wrappers for interacting with activeCollab API.",
     "keywords": ["activeCollab"],
-    "homepage": "http://github.com/kostajh/activeCollabAPI",
+    "homepage": "http://github.com/kostajh/ActiveCollabApi",
     "license": "GPL",
     "authors": [
         {
