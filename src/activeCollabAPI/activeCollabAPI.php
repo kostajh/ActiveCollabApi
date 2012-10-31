@@ -126,7 +126,8 @@ class ActiveCollabApi
      * @param void
      * @return array
      */
-    public function getVersion() {
+    public function getVersion()
+    {
         self::setRequestString('info');
         return self::callAPI();
     }
@@ -137,7 +138,8 @@ class ActiveCollabApi
      * @param void
      * @return array - array of ActiveCollabProject objects
      */
-    public function listProjects() {
+    public function listProjects()
+    {
         $path_info = '/projects';
         self::setRequestString($path_info);
         return self::callAPI();
@@ -157,17 +159,18 @@ class ActiveCollabApi
     /**
      * List all people involved with a project and their permissions.
      *
-     * @param $project_id - project Id
+     * @param int $project_id
+     *        The project Id.
      * @return array - array of ActiveCollabUser objects
      */
     public function listPeopleByProjectId($project_id)
     {
-      $path_info = '/projects/' . $project_id . '/people';
-      self::setRequestString($path_info);
-      $response = self::callAPI();
-      if (is_array($response)) {
-        return $response;
-      }
+        $path_info = '/projects/' . $project_id . '/people';
+        self::setRequestString($path_info);
+        $response = self::callAPI();
+        if (is_array($response)) {
+            return $response;
+        }
     }
 
     /**
@@ -175,9 +178,10 @@ class ActiveCollabApi
      *
      * @return float
      */
-    protected function getAPIVersion() {
-      $api_version = self::getVersion();
-      return $api_version['api_version'];
+    protected function getAPIVersion()
+    {
+        $api_version = self::getVersion();
+        return $api_version['api_version'];
     }
 
     /**
@@ -187,17 +191,18 @@ class ActiveCollabApi
      * @param $object - Object name
      * @return array of ActiveCollabCategory object`s
      */
-    protected function listCategories($project_id,$object_name) {
-      if(self::getAPIVersion() > 2.0) {
-        $path_info = 'projects/' . $project_id . '/' . $object_name . '/categories';
-        self::setRequestString($path_info);
-        $response = self::callAPI();
-        if (is_array($response)) {
-          return $response;
+    protected function listCategories($project_id,$object_name)
+    {
+        if (self::getAPIVersion() > 2.0) {
+            $path_info = 'projects/' . $project_id . '/' . $object_name . '/categories';
+            self::setRequestString($path_info);
+            $response = self::callAPI();
+            if (is_array($response)) {
+                return $response;
+            }
+        } else {
+            throw new ActiveCollabCommandNotRecognized(COMMAND_NOT_RECOGNIZED . 'Your API version is ' . self::getAPIVersion());
         }
-      } else {
-        throw new ActiveCollabCommandNotRecognized(COMMAND_NOT_RECOGNIZED . 'Your API version is ' . self::getAPIVersion());
-      }
     }
 
     /**
