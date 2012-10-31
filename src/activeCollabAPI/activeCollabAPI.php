@@ -1,9 +1,7 @@
 <?php
 
-namespace activeCollabAPI;
-
 /**
- * ActiveCollab class
+ * activeCollabAPI class.
  *
  */
 class activeCollabAPI {
@@ -672,3 +670,5 @@ class activeCollabAPI {
 
 
 }
+
+?>
