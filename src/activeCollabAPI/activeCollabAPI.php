@@ -738,5 +738,14 @@ class ActiveCollabApi
         return self::callAPI();
     }
 
+    /**
+     * Lists all companies in the system.
+     */
+    public function listPeople() {
+        $path_info = '/people';
+        self::setRequestString($path_info);
+        return self::callAPI();
+    }
+
 }
 
