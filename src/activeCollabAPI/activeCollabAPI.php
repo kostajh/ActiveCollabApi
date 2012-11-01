@@ -127,6 +127,19 @@ class ActiveCollabApi
     }
 
     /**
+     * Return user ID of the logged-in user.
+     *
+     * @return int
+     */
+    public function whoAmI() {
+        $api = $this->getVersion();
+        $loggedInUser = $api->logged_user;
+        $path = parse_url($loggedInUser);
+        $parts = explode('/', $path['path']);
+        return $parts[4];
+    }
+
+    /**
      * Return API version
      *
      * @param void
