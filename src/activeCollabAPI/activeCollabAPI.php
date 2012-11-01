@@ -712,4 +712,3 @@ class ActiveCollabApi
 
 }
 
-class ActiveCollabApiException extends Exception {}
