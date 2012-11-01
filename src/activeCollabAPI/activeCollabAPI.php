@@ -112,13 +112,15 @@ class ActiveCollabApi
         $message = curl_exec($ch);
         curl_close($ch);
         if ($message == 'HTTP/1.1 404 Not Found' || $message == '<h1>HTTP/1.1 403 Forbidden</h1>') {
-            throw new Exception($message, 1);
+            // throw new Exception($message, 1);
+            print $message;
 
         }
         $response = json_decode($message);
         if (!self::checkResponse($response)) {
             // Throw an error.
-            throw new Exception($response, 1);
+            print $response;
+            // throw new Exception($response, 1);
         } else {
             return $response;
         }
@@ -707,6 +709,18 @@ class ActiveCollabApi
      */
     public function getUserTasks($project_id) {
         $path_info = '/projects/' . $project_id . '/user-tasks';
+        self::setRequestString($path_info);
+        return self::callAPI();
+    }
+
+    /**
+     * Return ticket.
+     *
+     * @param $project_id
+     * @return object - ActiveCollabTicket object
+     */
+    public function getTicket($project_id, $ticket_id) {
+        $path_info = '/projects/' . $project_id . '/tickets/'. $ticket_id;
         self::setRequestString($path_info);
         return self::callAPI();
     }
