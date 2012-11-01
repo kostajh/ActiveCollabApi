@@ -698,8 +698,18 @@ class ActiveCollabApi
       return new ActiveCollabProject($id);
     } // findProjectById
 
+    /**
+     * Returns all tasks that are assigned to the logged in user in a particular project.
+     *
+     * @param void
+     * @return object - ActiveCollabTicket object
+     */
+    public function getUserTasks($project_id) {
+        $path_info = '/projects/' . $project_id . '/user-tasks';
+        self::setRequestString($path_info);
+        return self::callAPI();
+    }
 
 }
 
 class ActiveCollabApiException extends Exception {}
-
