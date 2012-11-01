@@ -747,5 +747,14 @@ class ActiveCollabApi
         return self::callAPI();
     }
 
+    /**
+     * Get a project by its Id.
+     */
+    public function getProject($id) {
+        $path_info = '/projects/' . $id;
+        self::setRequestString($path_info);
+        return self::callAPI();
+    }
+
 }
 
