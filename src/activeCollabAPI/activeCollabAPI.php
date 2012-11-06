@@ -750,5 +750,14 @@ class ActiveCollabApi
         return self::callAPI();
     }
 
+    /**
+     * Get a user by company ID and user ID.
+     */
+    public function getUser($companyId, $userId) {
+        $path_info = '/people/' . $companyId . '/users/' . $userId;
+        self::setRequestString($path_info);
+        return self::callAPI();
+    }
+
 }
 
