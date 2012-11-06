@@ -186,10 +186,7 @@ class ActiveCollabApi
     {
         $path_info = '/projects/' . $project_id . '/people';
         self::setRequestString($path_info);
-        $response = self::callAPI();
-        if (is_array($response)) {
-            return $response;
-        }
+        return self::callAPI();
     }
 
     /**
@@ -537,10 +534,7 @@ class ActiveCollabApi
     public function listCompanies() {
       $path_info = '/people';
       self::setRequestString($path_info);
-      $response = self::callAPI();
-      if (is_array($response)) {
-        return $response;
-      }
+      return self::callAPI();
     }
 
     /**
