@@ -759,5 +759,37 @@ class ActiveCollabApi
         return self::callAPI();
     }
 
+    /**
+     * Get a user by project ID and user ID.
+     */
+    public function getUserByProject($projectId, $userId) {
+        $people = self::listPeopleByProjectId($projectId);
+        // Make an array keyed on user ID
+        $projectUsers = array();
+        foreach ($people as $projectUser) {
+          $projectUsers[$projectUser->user_id] = $projectUser;
+        }
+        $userInfo = self::parseUserPermalink($projectUsers[$userId]->permalink);
+        return self::getUser($userInfo['company_id'], $userInfo['user_id']);
+    }
+
+    /**
+     * Parse a permalink for a user account.
+     *
+     * @param string $permalink
+     *        A link to to the user account in the format https://{url}/people/72/users/131
+     * @return array
+     *         An array with the company ID and user ID for the user.
+     */
+    public function parseUserPermalink($permalink) {
+        $user = array();
+        $slash = strpos($permalink, '//');
+        $path = substr($permalink, $slash + 2);
+        $parts = explode('/', $path);
+        $user['company_id'] = $parts[2];
+        $user['user_id'] = $parts[4];
+        return $user;
+    }
+
 }
 
