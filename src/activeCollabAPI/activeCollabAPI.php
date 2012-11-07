@@ -806,5 +806,17 @@ class ActiveCollabApi
         return self::callAPI();
     }
 
+    /**
+     * Get ActiveCollabCompany object.
+     *
+     * @param int $companyId
+     * @return object
+     */
+    public function getCompanyById($companyId) {
+        $path_info = '/people/' . $companyId;
+        self::setRequestString($path_info);
+        return self::callAPI();
+    }
+
 }
 
