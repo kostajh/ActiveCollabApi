@@ -117,12 +117,24 @@ class ActiveCollabApi
 
         }
         $response = json_decode($message);
+        // If there is an ID in the response, key the response array on the ID.
+        $data = array();
+        foreach ($response as $item) {
+            $tmp = (array)$item;
+            if (isset($tmp['id'])) {
+                $data[$tmp['id']] = $item;
+            }
+        }
+        // If we didn't get a keyed array, return the response.
+        if (!$data) {
+            return $response;
+        }
         if (!self::checkResponse($response)) {
             // Throw an error.
             print $response;
             // throw new Exception($response, 1);
         } else {
-            return $response;
+            return $data;
         }
     }
 
@@ -623,16 +635,6 @@ class ActiveCollabApi
       return new ActiveCollabDiscussion($project_id, $id);
     } // findDiscussionById
 
-    /**
-     * Create ActiveCollabMilestone object
-     *
-     * @param $project_id - project id
-     * @param $id - milestone id
-     * @return object
-     */
-    public function findMilestoneById($project_id,$id) {
-      return new ActiveCollabMilestone($project_id, $id);
-    } // findMilestoneById
 
     /**
      * Create ActiveCollabProjectGroup object
@@ -789,6 +791,19 @@ class ActiveCollabApi
         $user['company_id'] = $parts[2];
         $user['user_id'] = $parts[4];
         return $user;
+    }
+
+    /**
+     * Get ActiveCollabMilestone object
+     *
+     * @param $projectId - project id
+     * @param $id - milestone id
+     * @return object
+     */
+    public function getMilestoneById($projectId, $id) {
+        $path_info = '/projects/' . $projectId . '/milestones/' . $id;
+        self::setRequestString($path_info);
+        return self::callAPI();
     }
 
 }
