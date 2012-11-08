@@ -116,25 +116,14 @@ class ActiveCollabApi
             print $message;
 
         }
-        $response = json_decode($message);
-        // If there is an ID in the response, key the response array on the ID.
-        $data = array();
-        foreach ($response as $item) {
-            $tmp = (array)$item;
-            if (isset($tmp['id'])) {
-                $data[$tmp['id']] = $item;
-            }
-        }
-        // If we didn't get a keyed array, return the response.
-        if (!$data) {
-            return $response;
-        }
+        $response = json_decode($message, TRUE);
+
         if (!self::checkResponse($response)) {
             // Throw an error.
             print $response;
             // throw new Exception($response, 1);
         } else {
-            return $data;
+            return $response;
         }
     }
 
