@@ -758,9 +758,9 @@ class ActiveCollabApi
         // Make an array keyed on user ID
         $projectUsers = array();
         foreach ($people as $projectUser) {
-          $projectUsers[$projectUser->user_id] = $projectUser;
+          $projectUsers[$projectUser['user_id']] = $projectUser;
         }
-        $userInfo = self::parseUserPermalink($projectUsers[$userId]->permalink);
+        $userInfo = self::parseUserPermalink($projectUsers[$userId]['permalink']);
         return self::getUser($userInfo['company_id'], $userInfo['user_id']);
     }
 
