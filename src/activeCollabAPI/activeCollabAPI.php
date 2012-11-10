@@ -547,10 +547,7 @@ class ActiveCollabApi
     public function listStatusMessages() {
       $path_info = '/status';
       self::setRequestString($path_info);
-      $response = self::callAPI();
-      if (is_array($response)) {
-        return $response;
-      }
+      return self::callAPI();
     }
 
     /**
@@ -562,11 +559,8 @@ class ActiveCollabApi
     public function listStatusMessagesByUserId($user_id) {
       $path_info = '/status';
       $additional_params = array('user_id' => $user_id);
-      self::setRequestString($path_info,$additional_params);
-      $response = self::callAPI();
-      if (is_array($response)) {
-        return $response;
-      }
+      self::setRequestString($path_info, $additional_params);
+      return self::callAPI();
     }
 
     /**
