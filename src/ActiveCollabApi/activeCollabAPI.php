@@ -1,6 +1,6 @@
 <?php
 
-namespace activeCollabApi;
+namespace ActiveCollabApi;
 
 /**
  * @file
@@ -45,6 +45,10 @@ class ActiveCollabApi
      * @var string
      */
     protected static $API_response = null;
+
+    public function __construct() {
+
+    }
 
     /**
      * Format request string
