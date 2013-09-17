@@ -62,15 +62,10 @@ class ActiveCollabApi
     public static function setRequestString($path_info, $additional_params = null)
     {
         if (self::$key != null && $path_info != null) {
-            self::$api_string = self::$api_url . "?path_info=" . $path_info;
+            self::$api_string = self::$api_url;
+            self::$api_string .= "?auth_api_token=" . self::$key;
+            self::$api_string .= "&path_info=" . $path_info;
         }
-        if (is_array($additional_params) && !empty($additional_params)) {
-            foreach ($additional_params as $name => $value) {
-                self::$api_string .= "&" . $name . "=" . $value;
-            }
-        }
-        // Set the token.
-        self::$api_string .= "&token=" . self::$key;
         // Set format to JSON.
         self::$api_string .= "&format=json";
         return self::$api_string;
@@ -108,27 +103,56 @@ class ActiveCollabApi
      * @param array $file_params
      * @return object
      */
-    public static function callAPI($post_params = false, $file_params = false)
+    public static function callAPI($parameters, $method = 'GET')
     {
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, self::$api_string);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        $message = curl_exec($ch);
-        curl_close($ch);
-        if ($message == 'HTTP/1.1 404 Not Found' || $message == '<h1>HTTP/1.1 403 Forbidden</h1>') {
-            // throw new Exception($message, 1);
-            print $message;
+           // redefine
+        $path = (string) self::$api_string;
+        $parameters = (array) $parameters;
 
-        }
-        $response = json_decode($message, TRUE);
+        // init var
+        $options = array();
 
-        if (!self::checkResponse($response)) {
-            // Throw an error.
-            print $response;
-            // throw new Exception($response, 1);
+        // HTTP method
+        if ($method == 'POST') {
+            $options[CURLOPT_POST] = true;
+            $options[CURLOPT_POSTFIELDS] = http_build_query($parameters);
         } else {
-            return $response;
+            $options[CURLOPT_POST] = false;
+            if (!empty($parameters)) {
+                $path .= '&' . http_build_query($parameters);
+            }
         }
+
+        // set options
+        $options[CURLOPT_URL] = $path;
+        // $options[CURLOPT_USERAGENT] = $this->getUserAgent();
+        // if (ini_get('open_basedir') == '' && ini_get('safe_mode' == 'Off')) {
+            // $options[CURLOPT_FOLLOWLOCATION] = true;
+        // }
+        $options[CURLOPT_RETURNTRANSFER] = true;
+        // $options[CURLOPT_TIMEOUT] = (int) $this->getTimeOut();
+        $options[CURLOPT_SSL_VERIFYPEER] = false;
+        $options[CURLOPT_SSL_VERIFYHOST] = false;
+
+        // init
+        $curl = curl_init();
+
+        // set options
+        curl_setopt_array($curl, $options);
+
+        // execute
+        $response = curl_exec($curl);
+        $headers = curl_getinfo($curl);
+
+        // fetch errors
+        $errorNumber = curl_errno($curl);
+        $errorMessage = curl_error($curl);
+
+        // close
+        curl_close($curl);
+
+        // we expect JSON, so decode it
+        return @json_decode($response, true);
     }
 
     /**
