@@ -103,7 +103,7 @@ class ActiveCollabApi
      * @param array $file_params
      * @return object
      */
-    public static function callAPI($parameters, $method = 'GET')
+    public static function callAPI($parameters = array(), $method = 'GET')
     {
            // redefine
         $path = (string) self::$api_string;
@@ -177,6 +177,18 @@ class ActiveCollabApi
     public function getVersion()
     {
         self::setRequestString('info');
+        return self::callAPI();
+    }
+
+    public function getTasksForProject($project_slug)
+    {
+        self::setRequestString(sprintf('projects/%s/tasks', $project_slug));
+        return self::callAPI();
+    }
+
+    public function getSubtasksForProject($project_slug)
+    {
+        self::setRequestString(sprintf('projects/%s/subtasks', $project_slug));
         return self::callAPI();
     }
 
@@ -763,6 +775,12 @@ class ActiveCollabApi
         return self::callAPI();
     }
 
+    public function getProjects()
+    {
+        self::setRequestString('projects');
+        return self::callAPI();
+    }
+
     /**
      * Get a user by company ID and user ID.
      */
@@ -802,6 +820,15 @@ class ActiveCollabApi
         $user['company_id'] = $parts[2];
         $user['user_id'] = $parts[4];
         return $user;
+    }
+
+    /**
+     * Return assignment labels.
+     */
+    public function getAssignmentLabels() {
+        $path_info = '/info/labels/assignment';
+        self::setRequestString($path_info);
+        return self::callAPI();
     }
 
     /**
